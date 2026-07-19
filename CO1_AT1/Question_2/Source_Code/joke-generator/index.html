@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Joke Generator</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; max-width:900px; margin:40px auto; padding:0 20px; color:#222 }
+    h1 { text-align:center }
+    .joke { margin:20px 0; padding:18px; border-radius:8px; background:#f3f3f7; font-size:1.25rem }
+    .controls { text-align:center; margin:16px 0 }
+    button { background:#007bff; color:#fff; border:none; padding:10px 16px; border-radius:6px; font-size:1rem; cursor:pointer }
+    button:active { transform:translateY(1px) }
+    .images { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-top:28px }
+    .images img { width:100%; height:140px; object-fit:cover; border-radius:8px }
+    footer { margin-top:28px; font-size:0.9rem; color:#555 }
+  </style>
+</head>
+<body>
+  <h1>Random Joke Generator</h1>
+  <p style="text-align:center; max-width:700px; margin:auto">Click the button to fetch a random joke from an external API. This example uses <code>https://icanhazdadjoke.com/</code> which returns a single dad joke in JSON.</p>
+
+  <div class="controls">
+    <button id="newJoke">Get a joke</button>
+  </div>
+
+  <div class="joke" id="jokeArea">Press "Get a joke" to load a joke.</div>
+
+  <div style="text-align:center; margin-top:8px">
+    <small id="status" style="color:#666"></small>
+  </div>
+
+  <h2 style="margin-top:36px">Photos (sample)</h2>
+  <p style="margin:0 0 8px 0; color:#555">These are four sample photos shown alongside the joke. They are loaded from Unsplash (public images).</p>
+  <div class="images">
+    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=1000&q=80&auto=format&fit=crop" alt="photo-1">
+    <img src="https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=1000&q=80&auto=format&fit=crop" alt="photo-2">
+    <img src="https://images.unsplash.com/photo-1519985176271-adb1088fa94c?w=1000&q=80&auto=format&fit=crop" alt="photo-3">
+    <img src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=1000&q=80&auto=format&fit=crop" alt="photo-4">
+  </div>
+
+  <footer>
+    API: <a href="https://icanhazdadjoke.com/" target="_blank">icanhazdadjoke.com</a> — Accept header 'application/json' is required.
+  </footer>
+
+  <script>
+    const btn = document.getElementById('newJoke');
+    const jokeArea = document.getElementById('jokeArea');
+    const status = document.getElementById('status');
+
+    async function fetchJoke() {
+      status.textContent = 'Fetching...';
+      try {
+        // This API supports CORS and works from the browser
+        const res = await fetch('https://icanhazdadjoke.com/', {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        jokeArea.textContent = data.joke || 'No joke returned';
+        status.textContent = '';
+      } catch (err) {
+        jokeArea.textContent = 'Failed to fetch a joke. See console for details.';
+        status.textContent = 'Error';
+        console.error('fetchJoke error:', err);
+      }
+    }
+
+    // get a joke on button click and also on load once
+    btn.addEventListener('click', fetchJoke);
+    // optional: fetch one immediately
+    // fetchJoke();
+  </script>
+</body>
+</html>
